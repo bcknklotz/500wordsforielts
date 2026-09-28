@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IELTS Vocabulary</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{
+  --bg:#f5f6f8; --card:#ffffff; --text:#14161a; --muted:#6b7280;
+  --accent:#3b6ef6; --accent-weak:#e7edff; --border:#e5e7eb;
+  --correct:#2f9e5c; --correct-bg:#e8f7ee; --wrong:#d24b4b; --wrong-bg:#fdeceb;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  box-sizing:border-box;
+}
+:root:not([data-theme="light"]){ }
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111317; --card:#1b1e24; --text:#f2f3f5; --muted:#9aa0aa;
+    --accent:#5b8cff; --accent-weak:#232a44; --border:#2a2d34;
+    --correct:#4fce85; --correct-bg:#183024; --wrong:#ef6b6b; --wrong-bg:#341c1c;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111317; --card:#1b1e24; --text:#f2f3f5; --muted:#9aa0aa;
+  --accent:#5b8cff; --accent-weak:#232a44; --border:#2a2d34;
+  --correct:#4fce85; --correct-bg:#183024; --wrong:#ef6b6b; --wrong-bg:#341c1c;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{
+  background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  overflow-x:hidden;
+  transition:background-color .25s ease, color .25s ease;
+}
+#app{max-width:480px;margin:0 auto;min-height:100%;padding:16px 16px calc(24px + env(safe-area-inset-bottom,0px));}
+h1,h2,h3,p{margin:0}
+.header{padding-top:calc(4px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.header button{background:none;border:none;color:var(--accent);font-size:20px;padding:6px;cursor:pointer;line-height:1;transition:color .25s ease;border-radius:10px}
+.header button:active{background:var(--accent-weak)}
+.header h2{font-size:17px;font-weight:600}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.04);transition:background-color .25s ease,border-color .25s ease}
+.btn{display:block;width:100%;padding:15px;border-radius:14px;border:none;font-size:16px;font-weight:600;cursor:pointer;text-align:center;min-height:48px;transition:transform .1s ease, background-color .25s ease, opacity .2s ease}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-secondary{background:var(--card);color:var(--text);border:1px solid var(--border)}
+.btn-text{background:none;color:var(--muted);font-weight:500;box-shadow:none;padding:10px}
+.btn+.btn{margin-top:10px}
+.progressbar{height:8px;border-radius:6px;background:var(--accent-weak);overflow:hidden;margin:10px 0;transition:background-color .25s ease}
+.progressbar>div{height:100%;background:var(--accent);border-radius:6px;transition:width .3s, background-color .25s ease}
+.stat-row{display:flex;justify-content:space-between;color:var(--muted);font-size:14px;margin:4px 0}
+.muted{color:var(--muted);font-size:13px}
+.big{font-size:22px;font-weight:700}
+.opt{display:block;width:100%;text-align:left;padding:15px 16px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:15px;margin-bottom:10px;min-height:48px;cursor:pointer;transition:transform .1s ease, background-color .2s ease, border-color .2s ease}
+.opt:active:not(:disabled){transform:scale(.98)}
+.opt.correct{background:var(--correct-bg);border-color:var(--correct);color:var(--correct)}
+.opt.wrong{background:var(--wrong-bg);border-color:var(--wrong);color:var(--wrong)}
+.opt:disabled{opacity:.6}
+.word-en{font-size:26px;font-weight:700;letter-spacing:.2px}
+.ipa{color:var(--muted);font-size:15px;margin-top:2px}
+.pos{display:inline-block;font-size:12px;color:var(--muted);border:1px solid var(--border);padding:2px 8px;border-radius:8px;margin-top:6px}
+.dots{display:flex;gap:6px;margin:10px 0}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--border);transition:background-color .25s ease}
+.dot.on{background:var(--accent)}
+.swatches{display:flex;gap:14px;flex-wrap:wrap}
+.swatch{width:38px;height:38px;border-radius:50%;border:3px solid transparent;cursor:pointer;padding:0;box-shadow:0 0 0 1px var(--border) inset}
+.swatch.active{border-color:var(--text)}
+.deckrow{display:flex;gap:10px;margin-bottom:14px}
+.deckchip{flex:1;padding:11px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;font-weight:600;cursor:pointer;min-height:44px}
+.deckchip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.feedback-title{font-size:15px;font-weight:600;margin-bottom:10px}
+.feedback-title.ok{color:var(--correct)}
+.feedback-title.no{color:var(--wrong)}
+.ex{margin-top:12px;font-size:14px;line-height:1.5}
+.ex .en{font-style:italic}
+.ex .ru{color:var(--muted);margin-top:4px}
+.list-item{display:flex;justify-content:space-between;align-items:center;padding:13px 4px;border-bottom:1px solid var(--border);cursor:pointer}
+.list-item:last-child{border-bottom:none}
+.li-left .en{font-weight:600;font-size:15px}
+.li-left .ru{color:var(--muted);font-size:13px;margin-top:2px}
+.badge{font-size:11px;padding:3px 8px;border-radius:8px;background:var(--accent-weak);color:var(--accent);white-space:nowrap;margin-left:8px}
+.chips{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px;padding-bottom:2px}
+.chip{flex:none;padding:8px 14px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:13px;cursor:pointer;min-height:36px}
+.chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+input[type=text]{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:15px;margin-bottom:12px;min-height:44px}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:flex-end;z-index:50}
+.modal{background:var(--card);border-radius:18px 18px 0 0;padding:20px;width:100%;max-width:480px;margin:0 auto;max-height:80vh;overflow-y:auto}
+.row-between{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<input type="file" id="importFileInput" accept=".json,application/json" style="display:none" onchange="__importFileChosen(this)">
+<script>
+(function(){
+"use strict";
+
+/* ---------- Telegram integration ---------- */
+var tg = window.Telegram && window.Telegram.WebApp;
+if(tg){ try{ tg.ready(); tg.expand(); }catch(e){} }
+
+/* ---------- Color themes (спокойная палитра, без неона) ---------- */
+var THEMES = [
+  {id:'blue',       name:'Синяя',        accent:'#3b6ef6', weakLight:'#e7edff', weakDark:'#1d2740'},
+  {id:'emerald',    name:'Изумрудная',   accent:'#1f9d6b', weakLight:'#e3f7ee', weakDark:'#173829'},
+  {id:'violet',     name:'Фиолетовая',   accent:'#7c5cff', weakLight:'#ece7ff', weakDark:'#2a2340'},
+  {id:'graphite',   name:'Графитовая',   accent:'#54606e', weakLight:'#e7e9ec', weakDark:'#262b31'},
+  {id:'terracotta', name:'Терракотовая', accent:'#c9764a', weakLight:'#fbe9df', weakDark:'#3a271d'}
+];
+function effectiveDark(){
+  if(meta.mode==='dark') return true;
+  if(meta.mode==='light') return false;
+  if(tg && tg.colorScheme) return tg.colorScheme==='dark';
+  return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+}
+function applyMode(){
+  var root=document.documentElement;
+  if(meta.mode==='light') root.setAttribute('data-theme','light');
+  else if(meta.mode==='dark') root.setAttribute('data-theme','dark');
+  else if(tg && tg.colorScheme) root.setAttribute('data-theme', tg.colorScheme);
+  else root.removeAttribute('data-theme');
+}
+function applyThemeVars(){
+  var t = THEMES.filter(function(x){return x.id===(meta.theme||'blue');})[0] || THEMES[0];
+  var root=document.documentElement, dark=effectiveDark();
+  root.style.setProperty('--accent', t.accent);
+  root.style.setProperty('--accent-weak', dark? t.weakDark : t.weakLight);
+  if(tg && tg.setHeaderColor){ try{ tg.setHeaderColor(dark?'#111317':'#f5f6f8'); }catch(e){} }
+}
+function hexToRgba(hex, a){
+  var h=hex.replace('#',''); var r=parseInt(h.substring(0,2),16), g=parseInt(h.substring(2,4),16), b=parseInt(h.substring(4,6),16);
+  return 'rgba('+r+','+g+','+b+','+a+')';
+}
+function applyHighlightVars(){
+  var t = THEMES.filter(function(x){return x.id===(meta.hlColor||'blue');})[0] || THEMES[0];
+  var root=document.documentElement, dark=effectiveDark();
+  root.style.setProperty('--hl', t.accent);
+  root.style.setProperty('--hl-bg', hexToRgba(t.accent, dark?0.28:0.14));
+}
+if(tg){ tg.onEvent && tg.onEvent('themeChanged', function(){ if(!meta.mode || meta.mode==='auto'){ applyMode(); applyThemeVars(); applyHighlightVars(); render(); } }); }
+
+/* ---------- Word data: Block 1 (1-10) + Block 2 (11-20) ---------- */
+var WORDS_CORE = [
+{id:"abandon",en:"abandon",ipa:"/ə'bændən/",pos:"n.",syn:"relinquish",ru:"безудержность; раскованность",
+ defEn:"lacking restraint or control; feeling of extreme emotional intensity; unbounded enthusiasm",
+ defRu:"отсутствие сдержанности; состояние крайнего эмоционального подъёма; неудержимый энтузиазм",
+ exEn:"With her parents out of town, Kelly danced all night with abandon.",
+ exRu:"Когда её родители уехали из города, Келли всю ночь танцевала самозабвенно, без всякой сдержанности.",
+ block:1, distractors:["adult","academy","access"]},
+{id:"abstract",en:"abstract",ipa:"/'æbstrækt/",pos:"a.",syn:"theoretical; abstruse",ru:"абстрактный; отвлечённый",
+ defEn:"theoretical; not concrete; not applied or practical; difficult to understand",
+ defRu:"теоретический; не конкретный; непрактичный; трудный для понимания",
+ exEn:"To him, hunger was an abstract concept; he had never missed a meal.",
+ exRu:"Для него голод был абстрактным понятием — он никогда не пропускал ни одного приёма пищи.",
+ block:1, distractors:["accurate","adequate","adjacent"]},
+{id:"academy",en:"academy",ipa:"/ə'kædəmɪ/",pos:"n.",syn:"",ru:"академия; школа",
+ defEn:"school for special instruction; society of scholars, scientists, or artists",
+ defRu:"школа специального обучения; общество учёных, деятелей науки или искусства",
+ exEn:"The mission of our academy is actually to ensure the health and the well-being of all children.",
+ exRu:"Миссия нашей академии на самом деле состоит в том, чтобы обеспечить здоровье и благополучие всех детей.",
+ block:1, distractors:["adult","access","abandon"]},
+{id:"access",en:"access",ipa:"/'æksɛs/",pos:"n.",syn:"approach",ru:"доступ",
+ defEn:"approach; entry; entrance",
+ defRu:"подход; вход; проникновение",
+ exEn:"It remains to be seen whether the multinationals like Chevron, Exxon Mobil, and BP will give in to Mr Chavez's brinksmanship as they know he needs them as much as they need access to his oil.",
+ exRu:"Пока неясно, уступят ли транснациональные компании вроде Chevron, Exxon Mobil и BP балансированию Чавеса на грани конфликта, ведь они знают: он нуждается в них так же, как они — в доступе к его нефти.",
+ block:1, distractors:["academy","adult","abandon"]},
+{id:"accommodate",en:"accommodate",ipa:"/ə'kɒmədeɪt/",pos:"v.",syn:"adapt; oblige",ru:"приспосабливать; вмещать",
+ defEn:"do a favor or service for; provide for; supply with; make suitable; adapt; allow for",
+ defRu:"оказывать услугу; обеспечивать; делать подходящим; приспосабливать; учитывать",
+ exEn:"As for the stage in the public auditorium, it can easily be adjusted to accommodate from a full-scale musical production to one by a solo vocalist.",
+ exRu:"Что касается сцены в общественном зале — её легко переоборудовать так, чтобы она подходила и для масштабной музыкальной постановки, и для выступления одного вокалиста.",
+ block:1, distractors:["accumulate","acknowledge","affect"]},
+{id:"accompany",en:"accompany",ipa:"/ə'kʌmpənɪ/",pos:"v.",syn:"",ru:"сопровождать",
+ defEn:"travel with; be associated with",
+ defRu:"сопровождать; быть связанным с чем-либо",
+ exEn:"But the night being wet and inclement, Mr. Rochester did not accompany them.",
+ exRu:"Но поскольку ночь была сырой и ненастной, мистер Рочестер не стал их сопровождать.",
+ block:1, distractors:["acquire","adjust","administrate"]},
+{id:"accumulate",en:"accumulate",ipa:"/ə'kju:mjʊleɪt/",pos:"v.",syn:"collect",ru:"накапливать(ся)",
+ defEn:"pile up; collect; mount up; increase",
+ defRu:"накапливаться; собираться; возрастать",
+ exEn:"The tendency of Capital to accumulate is a big threat to the free market.",
+ exRu:"Тенденция капитала к накоплению представляет серьёзную угрозу свободному рынку.",
+ block:1, distractors:["administrate","affect","acknowledge"]},
+{id:"accurate",en:"accurate",ipa:"/'ækjʊrət/",pos:"a.",syn:"precise; correct",ru:"точный",
+ defEn:"capable of providing a correct reading or measurement; performing with care and precision",
+ defRu:"способный давать верные показания или измерения; выполняемый тщательно и точно",
+ exEn:"Very Interesting, can anyone tell me, how accurate is the English translation in the posted clip?",
+ exRu:"Очень интересно — может кто-нибудь сказать, насколько точен английский перевод в размещённом ролике?",
+ block:1, distractors:["abstract","adequate","adjacent"]},
+{id:"achieve",en:"achieve",ipa:"/ə'tʃi:v/",pos:"v.",syn:"accomplish; fulfill",ru:"достигать; добиваться",
+ defEn:"gain with effort; accomplish; fulfill",
+ defRu:"добиваться усилием; выполнять; осуществлять",
+ exEn:"Water, energy, health, agriculture, and biodiversity, require the world's scientific community to come up with the means to achieve sustainable development.",
+ exRu:"Вода, энергетика, здравоохранение, сельское хозяйство и биоразнообразие требуют, чтобы мировое научное сообщество нашло средства для достижения устойчивого развития.",
+ block:1, distractors:["acquire","adjust","advocate"]},
+{id:"acknowledge",en:"acknowledge",ipa:"/ək'nɒlɪdʒ/",pos:"v.",syn:"recognize; admit",ru:"признавать",
+ defEn:"declare to be true or admit; express obligation, thanks",
+ defRu:"признавать истинным; выражать признательность, благодарность",
+ exEn:"Although I acknowledge that the Beatles' tunes sound pretty dated today, I still prefer them to the songs my brothers play.",
+ exRu:"Хотя я признаю, что песни Beatles сегодня звучат довольно устаревшими, я всё равно предпочитаю их песням, которые слушают мои братья.",
+ block:1, distractors:["accompany","adapt","affect"]},
+
+{id:"acquire",en:"acquire",ipa:"/ə'kwaɪə(r)/",pos:"v.",syn:"obtain; gain",ru:"приобретать; получать",
+ defEn:"gain through experience or effort; gain possession of; locate with tracking system",
+ defRu:"получать в результате опыта или усилий; вступать во владение",
+ exEn:"As Norman Mailer once said to me, \"One of the hardest things to acquire is a persona, and you've got one.\"",
+ exRu:"Как однажды сказал мне Норман Мейлер: «Одна из самых трудных вещей, которые нужно приобрести, — это собственный образ, а у вас он уже есть».",
+ block:2, distractors:["achieve","accompany","adjust"]},
+{id:"adapt",en:"adapt",ipa:"/ə'dæpt/",pos:"v.",syn:"alter; modify",ru:"адаптироваться; приспосабливаться",
+ defEn:"make fit for; change to suit a new purpose",
+ defRu:"делать подходящим; изменять под новую цель",
+ exEn:"One way to adapt is to become smaller, generation by generation.",
+ exRu:"Один из способов адаптироваться — становиться меньше от поколения к поколению.",
+ block:2, distractors:["acknowledge","affect","administrate"]},
+{id:"adequate",en:"adequate",ipa:"/'ædɪkwət/",pos:"a.",syn:"sufficient; enough",ru:"достаточный",
+ defEn:"sufficient; enough to meet a purpose",
+ defRu:"достаточный для достижения цели",
+ exEn:"England missed key players through injury, lacked adequate preparation and was unable to match Australia's skill.",
+ exRu:"Англия потеряла ключевых игроков из-за травм, ей не хватило должной подготовки, и она не смогла сравниться с мастерством Австралии.",
+ block:2, distractors:["accurate","abstract","adjacent"]},
+{id:"adjacent",en:"adjacent",ipa:"/ə'dʒeɪsənt/",pos:"a.",syn:"adjoining; neighboring",ru:"смежный; соседний",
+ defEn:"adjoining; neighboring; close to; lying near",
+ defRu:"прилегающий; соседний; находящийся рядом",
+ exEn:"Philip's best friend Jason lived only four houses down the block, close but not immediately adjacent.",
+ exRu:"Лучший друг Филипа, Джейсон, жил всего через четыре дома по той же улице — близко, но не вплотную по соседству.",
+ block:2, distractors:["adequate","accurate","abstract"]},
+{id:"adjust",en:"adjust",ipa:"/ə'dʒʌst/",pos:"v.",syn:"adapt; regulate",ru:"регулировать; настраивать",
+ defEn:"adapt; regulate",
+ defRu:"приспосабливать; регулировать",
+ exEn:"The opera house was handed over by the builders nearly a year ago, but it's taken many months to install new stage machinery and to adjust the acoustics.",
+ exRu:"Оперный театр был сдан строителями почти год назад, но потребовалось много месяцев, чтобы установить новое сценическое оборудование и настроить акустику.",
+ block:2, distractors:["accompany","acquire","administrate"]},
+{id:"administrate",en:"administrate",ipa:"/əd'mɪnɪstreɪt/",pos:"v.",syn:"",ru:"управлять; администрировать",
+ defEn:"administer; supply",
+ defRu:"управлять; обеспечивать",
+ exEn:"Remember that Democrats want to increase spending and create more laws which in turn create more government to administrate and enforce.",
+ exRu:"Помните, что демократы хотят увеличить расходы и создать больше законов, что, в свою очередь, создаёт больше государственных структур для управления и обеспечения их исполнения.",
+ block:2, distractors:["adjust","accompany","adapt"]},
+{id:"adult",en:"adult",ipa:"/'ædʌlt/",pos:"n.",syn:"",ru:"взрослый (человек)",
+ defEn:"one who has attained maturity or legal age; fully grown",
+ defRu:"достигший зрелости или совершеннолетия; полностью сформировавшийся",
+ exEn:"Not clear from the video if the adult is a man or woman, but he or she is facing charges of endangering the welfare of a child.",
+ exRu:"Из видео не ясно, взрослый — мужчина или женщина, но ему или ей предъявлено обвинение в создании угрозы благополучию ребёнка.",
+ block:2, distractors:["academy","access","abandon"]},
+{id:"advocate",en:"advocate",ipa:"/'ædvəkət/",pos:"v.",syn:"urge; support",ru:"отстаивать; выступать за",
+ defEn:"speak, plead, or argue in favour of; plead for; push for something",
+ defRu:"выступать в поддержку; отстаивать; добиваться чего-либо",
+ exEn:"The some doctors advocate a smoking ban in the entire house.",
+ exRu:"Некоторые врачи выступают за полный запрет курения в доме.",
+ block:2, distractors:["achieve","accumulate","affect"]},
+{id:"affect",en:"affect",ipa:"/ə'fɛkt/",pos:"v.",syn:"",ru:"влиять на; воздействовать",
+ defEn:"have an emotional or cognitive impact upon",
+ defRu:"оказывать эмоциональное или когнитивное воздействие",
+ exEn:"The move is likely to affect women and girls all over the world as international brands such as Mango and Zara have signed up to the agreement.",
+ exRu:"Этот шаг, вероятно, затронет женщин и девушек по всему миру, поскольку такие международные бренды, как Mango и Zara, присоединились к соглашению.",
+ block:2, distractors:["adapt","acknowledge","accumulate"]},
+{id:"aggregate",en:"aggregate",ipa:"/'ægrɪgət/",pos:"v.",syn:"gather; accumulate",ru:"суммировать; объединять в целое",
+ defEn:"gather into a mass, sum, or whole; amount to",
+ defRu:"собирать в единую массу, сумму или целое",
+ exEn:"Before the Wall Street scandals, dealers managed to aggregate great wealth in short periods of time.",
+ exRu:"До скандалов на Уолл-стрит дилеры умудрялись накапливать огромные состояния за короткие сроки.",
+ block2:true, block:2, distractors:["adjust","advocate","affect"]}
+];
+
+/* High Score 100 IELTS Words — в исходном PDF без IPA/части речи/примеров, только слово и определение */
+var WORDS_TOP100 = [
+{id:"t100_aberration",en:"aberration",ru:"отклонение от нормы",defEn:"something that differs from the norm",defRu:"нечто, отличающееся от нормы"},
+{id:"t100_abhor",en:"abhor",ru:"ненавидеть; питать отвращение",defEn:"fill with horror and loathing; horrify; hate",defRu:"испытывать ужас и отвращение; ненавидеть"},
+{id:"t100_acquiesce",en:"acquiesce",ru:"соглашаться безропотно",defEn:"assent; agree without protesting",defRu:"соглашаться, не протестуя"},
+{id:"t100_alacrity",en:"alacrity",ru:"готовность; рвение",defEn:"cheerful promptness or willingness; eagerness; speed or quickness",defRu:"бодрая готовность или желание; рвение; быстрота"},
+{id:"t100_amiable",en:"amiable",ru:"дружелюбный; приветливый",defEn:"good-natured and likable; lovable; warmly friendly",defRu:"добродушный и располагающий к себе; тепло дружелюбный"},
+{id:"t100_appease",en:"appease",ru:"умиротворять; успокаивать",defEn:"bring peace, quiet, or calm to; satisfy or relieve",defRu:"приносить покой и спокойствие; удовлетворять, облегчать"},
+{id:"t100_arcane",en:"arcane",ru:"тайный; загадочный",defEn:"secret; mysterious; known only to the initiated",defRu:"секретный; загадочный; известный лишь посвящённым"},
+{id:"t100_avarice",en:"avarice",ru:"алчность; жадность",defEn:"greediness for wealth; insatiable desire of gain",defRu:"жадность к богатству; ненасытное желание наживы"},
+{id:"t100_brazen",en:"brazen",ru:"наглый; бесстыдный",defEn:"having loud, usually harsh, resonant sound; shameless",defRu:"громкий, резкий звук; бесстыдный, наглый"},
+{id:"t100_brusque",en:"brusque",ru:"резкий; грубоватый",defEn:"abrupt and curt in manner or speech; rudely abrupt, unfriendly",defRu:"резкий и отрывистый в манере или речи; грубовато-недружелюбный"},
+{id:"t100_cajole",en:"cajole",ru:"уговаривать; льстить",defEn:"influence or urge by gentle urging or flattering",defRu:"склонять кого-то мягкими уговорами или лестью"},
+{id:"t100_callous",en:"callous",ru:"чёрствый; бесчувственный",defEn:"emotionally hardened; unfeeling",defRu:"эмоционально огрубевший; бесчувственный"},
+{id:"t100_candor",en:"candor",ru:"искренность; прямота",defEn:"frankness; quality of being honest and straightforward in attitude and speech",defRu:"откровенность; честность и прямота в словах и поведении"},
+{id:"t100_chide",en:"chide",ru:"мягко журить; порицать",defEn:"scold mildly so as to correct or improve; express disapproval",defRu:"мягко бранить, чтобы исправить; выражать неодобрение"},
+{id:"t100_circumspect",en:"circumspect",ru:"осмотрительный; осторожный",defEn:"carefully aware of all circumstances; cautious",defRu:"внимательно учитывающий все обстоятельства; осторожный"},
+{id:"t100_clandestine",en:"clandestine",ru:"тайный; подпольный",defEn:"secret; conducted with or marked by hidden aims or methods",defRu:"секретный; осуществляемый скрытыми методами"},
+{id:"t100_coerce",en:"coerce",ru:"принуждать",defEn:"restrain by force, especially by law or authority; repress; curb",defRu:"сдерживать силой, особенно властью или законом; подавлять"},
+{id:"t100_coherent",en:"coherent",ipa:"/koʊ'hɪərənt/",pos:"a.",syn:"adhesive; cohesive",ru:"связный; логичный",defEn:"adhesive; cohesive; sticking together; logical; sound; capable of thinking and expressing yourself in a clear and consistent manner",defRu:"спаянный, цельный; логичный, последовательный в мыслях и речи",exEn:"If the EU is to form any kind of coherent common foreign policy, it needs France and Britain singing from the same song sheet.",exRu:"Если ЕС хочет выработать хоть сколько-нибудь связную общую внешнюю политику, ему нужно, чтобы Франция и Британия действовали согласованно."},
+{id:"t100_complacency",en:"complacency",ru:"самодовольство; благодушие",defEn:"feeling of contented self-satisfaction, especially when unaware of upcoming trouble",defRu:"довольство собой, особенно когда не замечаешь надвигающейся беды"},
+{id:"t100_confidant",en:"confidant",ru:"доверенное лицо",defEn:"a person entrusted with secrets",defRu:"человек, которому доверяют секреты"},
+{id:"t100_connive",en:"connive",ru:"тайно сговариваться; интриговать",defEn:"to plot, scheme",defRu:"замышлять, плести интриги"},
+{id:"t100_cumulative",en:"cumulative",ru:"накопительный; совокупный",defEn:"increasing by successive addition",defRu:"нарастающий за счёт последовательного добавления"},
+{id:"t100_debase",en:"debase",ru:"унижать; обесценивать",defEn:"reduce in quality or value; lower in esteem; degrade",defRu:"снижать качество или ценность; принижать; деградировать"},
+{id:"t100_decry",en:"decry",ru:"осуждать; порицать",defEn:"express strong disapproval of; disparage",defRu:"выражать резкое неодобрение; принижать"},
+{id:"t100_deferential",en:"deferential",ru:"почтительный; уважительный",defEn:"showing deference; respectful and considerate",defRu:"проявляющий почтение; уважительный и внимательный"},
+{id:"t100_demure",en:"demure",ru:"скромный; сдержанный",defEn:"modest and reserved in manner or behavior",defRu:"скромный и сдержанный в манерах"},
+{id:"t100_deride",en:"deride",ru:"высмеивать; насмехаться",defEn:"ridicule; make fun of; laugh at with contempt",defRu:"высмеивать; издеваться с презрением"},
+{id:"t100_despot",en:"despot",ru:"деспот; тиран",defEn:"tyrant; harsh, authoritarian ruler; eastern Orthodox bishop",defRu:"тиран; жёсткий авторитарный правитель"},
+{id:"t100_diligent",en:"diligent",ru:"усердный; старательный",defEn:"assiduous; industrious; hardworking",defRu:"прилежный; трудолюбивый"},
+{id:"t100_elated",en:"elated",ru:"ликующий; в восторге",defEn:"overjoyed; extremely happy and excited",defRu:"чрезвычайно счастливый и взволнованный"},
+{id:"t100_eloquent",en:"eloquent",ru:"красноречивый",defEn:"vividly or movingly expressive; persuasive",defRu:"ярко и убедительно выразительный"},
+{id:"t100_embezzle",en:"embezzle",ru:"растрачивать чужие средства; присваивать",defEn:"appropriate fraudulently to one's own use, as property entrusted to one's care; apply to one's private uses by a breach of trust",defRu:"незаконно присваивать вверенное имущество, злоупотребляя доверием"},
+{id:"t100_empathy",en:"empathy",ru:"эмпатия; сопереживание",defEn:"understanding and entering into another's feelings",defRu:"понимание и проникновение в чувства другого человека"},
+{id:"t100_enmity",en:"enmity",ru:"вражда; неприязнь",defEn:"ill will; hatred; quality or state of being hostile",defRu:"недоброжелательность; ненависть; враждебность"},
+{id:"t100_erudite",en:"erudite",ru:"эрудированный; учёный",defEn:"learned; scholarly, with emphasis on knowledge gained from books",defRu:"учёный, начитанный, обладающий книжными знаниями"},
+{id:"t100_extol",en:"extol",ru:"восхвалять; превозносить",defEn:"praise highly; glorify; celebrate",defRu:"высоко хвалить; прославлять"},
+{id:"t100_fabricate",en:"fabricate",ru:"изготавливать; фабриковать",defEn:"build; put together out of components or parts",defRu:"создавать, собирать из частей (в т.ч. выдумывать)"},
+{id:"t100_feral",en:"feral",ru:"дикий; одичавший",defEn:"not domestic; wild; existing in wild or untamed state",defRu:"недомашний; дикий, неприручённый"},
+{id:"t100_flabbergasted",en:"flabbergasted",ru:"ошеломлённый; потрясённый",defEn:"astonished; appalled, amazed, or stunned",defRu:"изумлённый; потрясённый, ошарашенный"},
+{id:"t100_forsake",en:"forsake",ru:"покидать; оставлять в беде",defEn:"leave someone who needs or counts on you",defRu:"оставлять того, кто нуждается в тебе или рассчитывает на тебя"},
+{id:"t100_fractious",en:"fractious",ru:"капризный; непослушный",defEn:"inclined to make trouble; disobedient; irritable",defRu:"склонный создавать проблемы; непослушный; раздражительный"},
+{id:"t100_furtive",en:"furtive",ru:"украдкой; скрытный",defEn:"marked by quiet and caution and secrecy",defRu:"тихий, осторожный, скрытный по характеру действий"},
+{id:"t100_gluttony",en:"gluttony",ru:"обжорство; чревоугодие",defEn:"excess in eating; extravagant indulgence of the appetite for food; voracity",defRu:"чрезмерность в еде; неумеренное потакание аппетиту"},
+{id:"t100_gratuitous",en:"gratuitous",ru:"бесплатный; беспричинный",defEn:"given freely; unwarranted; granted without recompense; unearned",defRu:"даваемый бесплатно; неоправданный, без причины"},
+{id:"t100_haughty",en:"haughty",ru:"высокомерный; надменный",defEn:"high; lofty; bold; arrogant; overbearing",defRu:"заносчивый; надменный; властный"},
+{id:"t100_hypocrisy",en:"hypocrisy",ru:"лицемерие",defEn:"act or practice of a hypocrite",defRu:"поведение, свойственное лицемеру"},
+{id:"t100_impeccable",en:"impeccable",ru:"безупречный",defEn:"faultless; incapable of sin or wrongdoing",defRu:"безукоризненный; не способный на проступок"},
+{id:"t100_impertinent",en:"impertinent",ru:"дерзкий; неуместно грубый",defEn:"improperly forward or bold; rude",defRu:"неуместно смелый или грубый"},
+{id:"t100_implacable",en:"implacable",ru:"неумолимый; непримиримый",defEn:"incapable of being pacified; not to be relieved",defRu:"не поддающийся умиротворению; неотступный"},
+{id:"t100_impudent",en:"impudent",ru:"нахальный; наглый",defEn:"casually rude, insolent, impertinent",defRu:"бесцеремонно грубый, дерзкий"},
+{id:"t100_incisive",en:"incisive",ru:"проницательный; острый",defEn:"penetrating, clear, and sharp, as in operation or expression",defRu:"проникающий, чёткий и острый — о мышлении или выражении"},
+{id:"t100_indolent",en:"indolent",ru:"ленивый; вялый",defEn:"lazy; slow to heal, grow, or develop; inactive",defRu:"ленивый; медленно развивающийся или заживающий; бездеятельный"},
+{id:"t100_inept",en:"inept",ru:"неумелый; неуместный",defEn:"lacking of judgment, sense, or reason; unsuited; inappropriate; foolish",defRu:"лишённый здравого смысла; неподходящий; нелепый"},
+{id:"t100_infamy",en:"infamy",ru:"позор; дурная слава",defEn:"notoriety, extreme ill repute",defRu:"печальная известность; крайне дурная репутация"},
+{id:"t100_inhibit",en:"inhibit",ipa:"/ɪn'hɪbɪt/",pos:"v.",syn:"restrain; prevent",ru:"сдерживать; подавлять",defEn:"restrain; prevent or forbid; hold back",defRu:"ограничивать; препятствовать; удерживать",exEn:"Only two things inhibit him from taking a punch at Mike Tyson: Tyson's left hook, and Tyson's right jab.",exRu:"Только две вещи удерживают его от того, чтобы ударить Майка Тайсона: левый хук Тайсона и его правый джеб."},
+{id:"t100_innate",en:"innate",ru:"врождённый",defEn:"possessed at birth; inborn",defRu:"присущий от рождения"},
+{id:"t100_insatiable",en:"insatiable",ru:"ненасытный",defEn:"not easily satisfied; impossible to satiate or satisfy; greedy",defRu:"не поддающийся насыщению; жадный до чего-либо"},
+{id:"t100_insular",en:"insular",ru:"ограниченный; узкий во взглядах",defEn:"of isolated people, especially having a narrow viewpoint",defRu:"свойственный изолированным людям, особенно с узким кругозором"},
+{id:"t100_intrepid",en:"intrepid",ru:"бесстрашный; отважный",defEn:"fearless; indicating or springing from courage",defRu:"бесстрашный; проистекающий из смелости"},
+{id:"t100_inveterate",en:"inveterate",ru:"закоренелый; застарелый",defEn:"deep-rooted; firmly and long established; habitual",defRu:"глубоко укоренившийся; давно устоявшийся; привычный"},
+{id:"t100_jubilant",en:"jubilant",ru:"ликующий; торжествующий",defEn:"happy; merry; joyful and proud especially because of triumph or success",defRu:"радостный и гордый, особенно после триумфа или успеха"},
+{id:"t100_knell",en:"knell",ru:"похоронный звон",defEn:"the solemn sound of a bell, often indicating a death",defRu:"торжественный звук колокола, часто знаменующий смерть"},
+{id:"t100_lithe",en:"lithe",ru:"гибкий; пластичный",defEn:"flexible; moving and bending with ease",defRu:"гибкий; легко сгибающийся и двигающийся"},
+{id:"t100_lurid",en:"lurid",ru:"жуткий; шокирующий",defEn:"causing shock or horror; gruesome",defRu:"вызывающий шок или ужас; жуткий"},
+{id:"t100_maverick",en:"maverick",ru:"индивидуалист; отступник от норм",defEn:"one that refuses to abide or be independent; an unbranded range animal",defRu:"тот, кто отказывается подчиняться и действует независимо"},
+{id:"t100_maxim",en:"maxim",ru:"изречение; афоризм",defEn:"proverb; formulation of fundamental principle or general truth",defRu:"пословица; формулировка основополагающего принципа или истины"},
+{id:"t100_meticulous",en:"meticulous",ru:"дотошный; скрупулёзный",defEn:"excessively careful; marked by extreme care in treatment of details",defRu:"чрезмерно тщательный; отличающийся вниманием к деталям"},
+{id:"t100_modicum",en:"modicum",ru:"малое количество; толика",defEn:"limited quantity; small or moderate amount; any small thing",defRu:"ограниченное, небольшое или умеренное количество чего-либо"},
+{id:"t100_morose",en:"morose",ru:"угрюмый; мрачный",defEn:"ill humored; sullen; depressingly dark; gloomy; persistent",defRu:"хмурый; угрюмый; удручающе мрачный"},
+{id:"t100_myriad",en:"myriad",ru:"бесчисленный; несметный",defEn:"of very large or indefinite number; of ten thousand",defRu:"очень большое или неопределённое число; буквально «десять тысяч»"},
+{id:"t100_nadir",en:"nadir",ru:"надир; низшая точка",defEn:"lowest point; point on sphere opposites zenith diametrically",defRu:"самая низкая точка; противоположность зениту"},
+{id:"t100_nominal",en:"nominal",ru:"номинальный; формальный",defEn:"in name only; insignificantly small",defRu:"существующий лишь номинально; ничтожно малый"},
+{id:"t100_novice",en:"novice",ru:"новичок",defEn:"beginner; person new to a field or activity",defRu:"начинающий; человек, новый в деле"},
+{id:"t100_nuance",en:"nuance",ru:"нюанс; тонкое отличие",defEn:"subtle or slight degree of difference",defRu:"тонкое, едва заметное различие"},
+{id:"t100_oblivious",en:"oblivious",ru:"не замечающий; забывчивый",defEn:"inattentive or unmindful; lacking all memory; forgetful",defRu:"невнимательный, не осознающий происходящего; забывчивый"},
+{id:"t100_obsequious",en:"obsequious",ru:"подобострастный; угодливый",defEn:"slavishly attentive; attempting to win favor from influential people by flattery",defRu:"рабски услужливый; добивающийся расположения лестью"},
+{id:"t100_obtuse",en:"obtuse",ru:"тупой; недалёкий",defEn:"lacking in insight or discernment; stupid",defRu:"лишённый проницательности; несообразительный"},
+{id:"t100_panacea",en:"panacea",ru:"панацея",defEn:"remedy for all diseases, evils, or difficulties; a cure-all",defRu:"универсальное средство от всех бед"},
+{id:"t100_parody",en:"parody",ru:"пародия",defEn:"work or performance that imitates another work or performance with ridicule or irony; make fun of",defRu:"произведение, высмеивающее другое через подражание"},
+{id:"t100_penchant",en:"penchant",ru:"склонность; пристрастие",defEn:"strong inclination; definite liking",defRu:"сильная склонность; явное предпочтение"},
+{id:"t100_perusal",en:"perusal",ru:"внимательное изучение",defEn:"a careful examination, review",defRu:"тщательное рассмотрение, изучение"},
+{id:"t100_plethora",en:"plethora",ru:"избыток; изобилие",defEn:"excess; overfullness in any respect; superabundance",defRu:"чрезмерность; переизбыток чего-либо"},
+{id:"t100_predilection",en:"predilection",ru:"предрасположенность; тяготение",defEn:"condition of favoring or liking; tendency towards; preference",defRu:"склонность к чему-либо; предпочтение"},
+{id:"t100_quaint",en:"quaint",ru:"причудливый; старомодный",defEn:"odd; old-fashioned; picturesque; unfamiliar or unusual in character",defRu:"странноватый, старомодный, но живописный"},
+{id:"t100_rash",en:"rash",ru:"опрометчивый; поспешный",defEn:"hasty, incautious",defRu:"поспешный; неосторожный"},
+{id:"t100_repudiate",en:"repudiate",ru:"отвергать; отрекаться",defEn:"disown; refuse to acknowledge; reject validity or authority of",defRu:"отказываться признавать; отвергать законность или власть чего-либо"},
+{id:"t100_rife",en:"rife",ru:"широко распространённый",defEn:"excessively abundant or numerous; in widespread existence, practice, or use",defRu:"чрезмерно многочисленный; повсеместно распространённый"},
+{id:"t100_salient",en:"salient",ru:"заметный; выступающий",defEn:"prominent or protruding; projecting outwardly; moving by leaps or springs",defRu:"заметно выделяющийся; выступающий наружу"},
+{id:"t100_serendipity",en:"serendipity",ru:"счастливая случайность",defEn:"gift for finding valuable or desirable things by accident; accidental good fortune or luck",defRu:"дар находить ценное случайно; удачное стечение обстоятельств"},
+{id:"t100_staid",en:"staid",ru:"степенный; чинный",defEn:"sober; serious, organized, and professional; characterized by dignity and propriety",defRu:"серьёзный, организованный; отличающийся достоинством и приличием"},
+{id:"t100_superfluous",en:"superfluous",ru:"излишний; лишний",defEn:"being beyond what is required or sufficient",defRu:"превышающий то, что требуется или достаточно"},
+{id:"t100_sycophant",en:"sycophant",ru:"подхалим; льстец",defEn:"one who attempts to win favor by flattering influential people; bootlicker; yes man",defRu:"тот, кто добивается расположения лестью влиятельным людям"},
+{id:"t100_taciturn",en:"taciturn",ru:"неразговорчивый; молчаливый",defEn:"silent or reserved in speech; saying little; not inclined to speak or converse",defRu:"малословный, сдержанный в речи; не склонный к разговорам"},
+{id:"t100_truculent",en:"truculent",ru:"воинственный; агрессивный",defEn:"disposed to fight; belligerent; aggressively hostile",defRu:"склонный к конфликту; агрессивно враждебный"},
+{id:"t100_umbrage",en:"umbrage",ru:"обида; негодование",defEn:"resentment, offence",defRu:"чувство обиды или негодования"},
+{id:"t100_venerable",en:"venerable",ru:"почтенный; уважаемый",defEn:"deserving high respect; impressive by reason of age; profoundly honored",defRu:"заслуживающий глубокого уважения, часто в силу возраста"},
+{id:"t100_vex",en:"vex",ru:"раздражать; досаждать",defEn:"annoy; disturb, especially by minor irritations; be a mystery or bewildering to",defRu:"досаждать мелкими неприятностями; сбивать с толку"},
+{id:"t100_vociferous",en:"vociferous",ru:"крикливый; горластый",defEn:"offensively loud; noisy; making outcry",defRu:"оскорбительно громкий; шумно протестующий"},
+{id:"t100_wanton",en:"wanton",ru:"необузданный; беспричинно злой",defEn:"unrestrained; willfully malicious; immoral or unchaste",defRu:"несдержанный; умышленно злонамеренный или аморальный"},
+{id:"t100_zenith",en:"zenith",ru:"зенит; вершина",defEn:"point directly overhead in sky; summit",defRu:"точка неба прямо над головой; высшая точка"}
+];
+
+var DECKS = {
+  core500:{id:'core500', name:'Первые 20', hidden:true, words:WORDS_CORE},
+  top100:{id:'top100', name:'100 слов', words:WORDS_TOP100}
+};
+var BY_ID = {};
+Object.keys(DECKS).forEach(function(dk){
+  DECKS[dk].words.forEach(function(w,i){ w.order=i+1; w.deck=dk; BY_ID[w.id]=w; });
+});
+function currentWords(){ return DECKS[meta.deck||'core500'].words; }
+var BLOCK_SIZES = [5,10,15,20];
+var MASTER_TARGETS = [3,5,7,10];
+
+/* ---------- Progress storage ---------- */
+var STORE_KEY="ievocab_progress_v1", META_KEY="ievocab_meta_v2", PROGRESS_SCHEMA=1;
+/* Прогресс всегда хранится с номером схемы {v, data}. Старые записи (без обёртки, ещё "сырой" словарь)
+   читаются как есть и при первом же сохранении автоматически переоборачиваются — прогресс не теряется.
+   При будущих изменениях формата сюда достаточно добавить миграцию по значению raw.v. */
+function loadProgress(){
+  try{
+    var raw = JSON.parse(localStorage.getItem(STORE_KEY));
+    if(!raw) return {};
+    if(raw.v && raw.data) return raw.data;
+    return raw; // легаси-формат без обёртки
+  }catch(e){ return {}; }
+}
+function saveProgress(p){ try{ localStorage.setItem(STORE_KEY, JSON.stringify({v:PROGRESS_SCHEMA, data:p})); }catch(e){} }
+function loadMeta(){
+  var m={};
+  try{ m=JSON.parse(localStorage.getItem(META_KEY))||{}; }catch(e){ m={}; }
+  if(!m.unlockedBlockByDeck){
+    var old=null; try{ old=JSON.parse(localStorage.getItem('ievocab_meta_v1')); }catch(e){}
+    m.unlockedBlockByDeck = {core500:(old&&old.unlockedBlock)||1, top100:1};
+  }
+  m.theme = m.theme||'blue';
+  m.mode = m.mode||'auto';
+  m.blockSize = m.blockSize||5;
+  m.masterTarget = m.masterTarget||5;
+  m.hlColor = m.hlColor||'blue';
+  m.deck = (m.deck && DECKS[m.deck] && !DECKS[m.deck].hidden) ? m.deck : 'top100';
+  return m;
+}
+function saveMeta(m){ try{localStorage.setItem(META_KEY, JSON.stringify(m));}catch(e){} }
+var progress = loadProgress();
+var meta = loadMeta();
+applyMode(); applyThemeVars(); applyHighlightVars();
+
+function blockSize(){ return meta.blockSize||5; }
+function masterTarget(){ return meta.masterTarget||5; }
+function wordBlock(w){ return Math.ceil(w.order/blockSize()); }
+function totalBlocks(){ return Math.ceil(currentWords().length/blockSize()); }
+function unlockedBlock(){ return meta.unlockedBlockByDeck[meta.deck]||1; }
+function setUnlockedBlock(n){ meta.unlockedBlockByDeck[meta.deck]=n; }
+
+function ensure(id){ if(!progress[id]) progress[id]={c:0,w:0,last:0}; return progress[id]; }
+function isMastered(id){ return ensure(id).c>=masterTarget(); }
+function status(id){
+  var p=ensure(id);
+  if(p.c>=masterTarget()) return 'mastered';
+  if(p.c===0 && p.w===0) return 'new';
+  return 'learning';
+}
+function unlockedWords(){ var ub=unlockedBlock(); return currentWords().filter(function(w){return wordBlock(w)<=ub;}); }
+function checkUnlock(){
+  /* Следующий блок открывается, только когда все слова текущего блока достигли цели закрепления. Возвращает true, если блок открылся. */
+  var opened=false;
+  while(true){
+    var ub=unlockedBlock();
+    var blockWords = currentWords().filter(function(w){return wordBlock(w)===ub;});
+    var ready = blockWords.length>0 && blockWords.every(function(w){return isMastered(w.id);});
+    if(ready && ub<totalBlocks()){ setUnlockedBlock(ub+1); opened=true; } else break;
+  }
+  if(opened) saveMeta(meta);
+  return opened;
+}
+/* Пересчитать разблокированный блок после смены размера блока в настройках */
+function recomputeUnlockedBlock(){
+  var maxOrder=0;
+  currentWords().forEach(function(w){ var p=progress[w.id]; if(p && (p.c>0||p.w>0)) maxOrder=Math.max(maxOrder,w.order); });
+  setUnlockedBlock(Math.max(1, Math.min(totalBlocks(), Math.ceil(maxOrder/blockSize()) || 1)));
+}
+
+/* Подсветка слова (во всех формах) внутри примера-предложения */
+/* Автоподбор дистракторов из той же колоды: избегаем слов с пересекающимся переводом (близких синонимов) */
+function tokenize(s){ return (s||'').toLowerCase().replace(/[();]/g,'').split(/[\s,;]+/).filter(Boolean); }
+function pickDistractors(word){
+  var pool = currentWords().filter(function(x){return x.id!==word.id;});
+  var wTok = tokenize(word.ru);
+  var safe = pool.filter(function(c){
+    var cTok = tokenize(c.ru);
+    return !cTok.some(function(t){return wTok.indexOf(t)>=0;});
+  });
+  var source = safe.length>=3 ? safe : pool;
+  return shuffle(source.slice()).slice(0,3);
+}
+
+/* ---------- Adaptive picker (внутри текущего блока) ---------- */
+/* Пул: незакреплённые слова открытых блоков. Правило открытия следующего блока — все слова блока достигли цели.
+   Вес слова = 1 + его прогресс: слово 4/5 показывается чаще, чем 1/5 (как в ТЗ). Ошибка возвращает слово через 2–3 карточки. */
+function studyPool(mode){
+  var pool = unlockedWords().filter(function(w){return !isMastered(w.id);});
+  if(mode==='mistakes') pool = pool.filter(function(w){return ensure(w.id).w>0;});
+  return pool;
+}
+function weightOf(p){ return 1 + p.c; }
+function pickNext(){
+  var pool = studyPool(studyMode);
+  if(!pool.length) return null;
+  cardCounter++;
+  var ids = pool.map(function(w){return w.id;});
+  retry = retry.filter(function(r){return ids.indexOf(r.id)>=0;});
+  for(var i=0;i<retry.length;i++){
+    if(retry[i].due<=cardCounter && (retry[i].id!==lastId || pool.length===1)){
+      var rid = retry[i].id; retry.splice(i,1); return rid;
+    }
+  }
+  var cand = pool.filter(function(w){return w.id!==lastId;});
+  if(!cand.length) cand = pool;
+  var total = 0; cand.forEach(function(w){ total += weightOf(ensure(w.id)); });
+  var r = Math.random()*total;
+  for(var j=0;j<cand.length;j++){
+    r -= weightOf(ensure(cand[j].id));
+    if(r<=0) return cand[j].id;
+  }
+  return cand[cand.length-1].id;
+}
+
+/* ---------- App state ---------- */
+var screen='home'; // home | study | list | progress
+var studyMode='all', currentId=null, lastId=null, retry=[], cardCounter=0;
+var session={correct:0,wrong:0,masteredNow:0,blocksOpened:0};
+var listFilter='all', listSearch='';
+var navStack=[];
+
+function go(s){ navStack.push(screen); screen=s; render(); updateBackButton(); }
+function back(){ screen = navStack.pop() || 'home'; render(); updateBackButton(); }
+function updateBackButton(){
+  if(!tg) return;
+  if(screen==='home'){ tg.BackButton.hide(); } else { tg.BackButton.show(); }
+}
+if(tg){ tg.BackButton.onClick(function(){ back(); }); }
+
+/* ---------- Rendering helpers ---------- */
+function el(html){ var d=document.createElement('div'); d.innerHTML=html; return d.firstElementChild; }
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+function header(title, showBack, rightHtml){
+  return '<div class="header">'+
+    (showBack?'<button onclick="__back()">‹</button>':'')+
+    '<h2 style="flex:1">'+esc(title)+'</h2>'+
+    (rightHtml||'')+
+    '</div>';
+}
+
+function statsData(){
+  var words=currentWords(); var all=words.length, mastered=0, learning=0, news=0, review=0;
+  var ub=unlockedBlock();
+  words.forEach(function(w){
+    var st=status(w.id);
+    if(wordBlock(w)>ub) return;
+    if(st==='mastered') mastered++;
+    else if(st==='new') news++;
+    else { learning++; if(ensure(w.id).w>0) review++; }
+  });
+  return {all:all, mastered:mastered, learning:learning, news:news, review:review};
+}
+
+function renderHome(){
+  var s = statsData();
+  var total = currentWords().length;
+  var pct = total? Math.round(100*s.mastered/total) : 0;
+  var html = header('IELTS Vocabulary', false, '<button onclick="__go(\'settings\')" aria-label="Настройки">⚙️</button>') +
+  (Object.keys(DECKS).filter(function(dk){return !DECKS[dk].hidden;}).length>1?'<div class="deckrow">'+
+    Object.keys(DECKS).filter(function(dk){return !DECKS[dk].hidden;}).map(function(dk){return '<button class="deckchip'+((meta.deck||'core500')===dk?' active':'')+'" onclick="__setDeck(\''+dk+'\')">'+DECKS[dk].name+'</button>';}).join('')+'</div>':'')+
+  '<div class="card">'+
+    '<p class="muted">Сегодня</p>'+
+    '<div class="stat-row"><span>Новые слова</span><span>'+s.news+'</span></div>'+
+    '<div class="stat-row"><span>Слова на повторение</span><span>'+s.review+'</span></div>'+
+    '<p class="muted" style="margin-top:14px">Общий прогресс</p>'+
+    '<div class="big">'+s.mastered+' / '+total+'</div>'+
+    '<div class="progressbar"><div style="width:'+pct+'%"></div></div>'+
+  '</div>'+
+  '<button class="btn btn-primary" onclick="__startStudy(\'all\')">Продолжить обучение</button>'+
+  '<button class="btn btn-secondary" onclick="__startStudy(\'mistakes\')">Повторить ошибки</button>'+
+  '<button class="btn btn-secondary" onclick="__go(\'list\')">Все слова</button>'+
+  '<button class="btn btn-secondary" onclick="__go(\'progress\')">Прогресс</button>';
+  return html;
+}
+
+var currentAnswered=false;
+
+function renderStudy(){
+  if(!currentId){
+    var s0 = statsData();
+    var deckDone = s0.mastered>=currentWords().length;
+    return header(session.blocksOpened>0||deckDone?'Блок пройден':'Сессия завершена', true) +
+    '<div class="card">'+
+      (deckDone?'<p style="font-weight:600;margin-bottom:8px">Ты прошёл все слова этой колоды.</p>':(session.blocksOpened>0?'<p style="font-weight:600;margin-bottom:8px">Все слова блока закреплены — следующий блок открыт.</p>':''))+
+      '<p class="muted">В этой сессии</p>'+
+      '<div class="stat-row"><span>Правильных ответов</span><span>'+session.correct+'</span></div>'+
+      '<div class="stat-row"><span>Ошибок</span><span>'+session.wrong+'</span></div>'+
+      '<div class="stat-row"><span>Слов закреплено</span><span>'+session.masteredNow+'</span></div>'+
+    '</div>'+
+    (deckDone?'':'<button class="btn btn-primary" onclick="__startStudy(\'all\')">Продолжить обучение</button>')+
+    (s0.review>0?'<button class="btn btn-secondary" onclick="__startStudy(\'mistakes\')">Повторить ошибки</button>':'')+
+    '<button class="btn btn-text" onclick="__go(\'home\')">'+(deckDone?'На главную':'Продолжить позже')+'</button>';
+  }
+  var id = currentId;
+  var w = BY_ID[id];
+  var p = ensure(id);
+  var target = masterTarget();
+  var wb = wordBlock(w);
+  var blockWords = currentWords().filter(function(x){return wordBlock(x)===wb;});
+  var doneInBlock = blockWords.filter(function(x){return isMastered(x.id);}).length;
+  currentAnswered=false;
+  var opts = [w].concat(pickDistractors(w));
+  opts = shuffle(opts.slice());
+  var dots=''; for(var i=0;i<target;i++) dots+='<span class="dot'+(i<p.c?' on':'')+'"></span>';
+  var html = header('Block '+wb, true) +
+    '<p class="muted">Закреплено в блоке: '+doneInBlock+' / '+blockWords.length+'</p>'+
+    '<div class="progressbar"><div style="width:'+Math.round(100*doneInBlock/blockWords.length)+'%"></div></div>'+
+    '<div class="card">'+
+      '<div class="word-en">'+esc(w.en)+'</div>'+
+      (w.ipa?'<div class="ipa">'+esc(w.ipa)+'</div>':'')+
+      (w.pos?'<span class="pos">'+esc(w.pos)+'</span>':'')+
+      '<p style="margin-top:16px;font-weight:600">Что означает это слово?</p>'+
+    '</div>'+
+    '<div id="opts">' +
+      opts.map(function(o){return '<button class="opt" data-id="'+o.id+'" onclick="__answer(\''+id+'\',\''+o.id+'\',this)">'+esc(o.ru)+'</button>';}).join('') +
+    '</div>'+
+    '<div class="dots">'+dots+'</div>'+
+    '<p class="muted">Закрепление: '+p.c+'/'+target+'</p>';
+  return html;
+}
+
+function renderFeedback(id, correct, chosenId){
+  var w=BY_ID[id];
+  return header(correct?'Правильно':'Почти', true) +
+  '<div class="card">'+
+    '<p class="feedback-title '+(correct?'ok':'no')+'">'+(correct?'✓ Правильно':'Почти. Запомни это слово.')+'</p>'+
+    '<div class="word-en">'+esc(w.en)+'</div>'+
+    (w.ipa?'<div class="ipa">'+esc(w.ipa)+'</div>':'')+
+    '<p style="margin-top:10px">'+esc(w.ru)+'</p>'+
+    (w.syn?'<p class="muted" style="margin-top:6px">Syn: '+esc(w.syn)+'</p>':'')+
+    (w.exEn?'<div class="ex"><p class="en">"'+esc(w.exEn)+'"</p><p class="ru">'+esc(w.exRu)+'</p></div>':'<div class="ex"><p class="en">'+esc(w.defEn)+'</p><p class="ru">'+esc(w.defRu)+'</p></div>')+
+  '</div>'+
+  '<button class="btn btn-primary" onclick="__continueStudy()">Продолжить</button>';
+}
+
+function renderList(){
+  var chips=[['all','Все'],['new','Новые'],['learning','Изучаются'],['mastered','Закреплены'],['mistakes','Ошибки']];
+  var target = masterTarget();
+  var ub = unlockedBlock();
+  var words = currentWords().filter(function(w){
+    if(listFilter==='mistakes') { if(ensure(w.id).w<=0) return false; }
+    else if(listFilter!=='all' && status(w.id)!==listFilter) return false;
+    if(listSearch){
+      var q=listSearch.toLowerCase();
+      if(w.en.toLowerCase().indexOf(q)<0 && w.ru.toLowerCase().indexOf(q)<0) return false;
+    }
+    return true;
+  });
+  var html = header('Мои слова', true) +
+    '<input type="text" placeholder="🔍 Найти слово" value="'+esc(listSearch)+'" oninput="__search(this.value)">'+
+    '<div class="chips">' + chips.map(function(c){return '<button class="chip'+(listFilter===c[0]?' active':'')+'" onclick="__filter(\''+c[0]+'\')">'+c[1]+'</button>';}).join('') + '</div>'+
+    '<div class="card">' +
+      (words.length? words.map(function(w){
+        var p=ensure(w.id); var st=status(w.id);
+        var label = wordBlock(w)>ub?'🔒':(st==='mastered'?'MASTERED':(st==='new'?'NEW':p.c+'/'+target));
+        return '<div class="list-item" onclick="__showWord(\''+w.id+'\')"><div class="li-left"><div class="en">'+esc(w.en)+'</div><div class="ru">'+esc(w.ru)+'</div></div><span class="badge">'+label+'</span></div>';
+      }).join('') : '<p class="muted">Ничего не найдено</p>')+
+    '</div>';
+  return html;
+}
+
+function renderProgress(){
+  var s = statsData();
+  var total = currentWords().length;
+  var pct = total? Math.round(100*s.mastered/total) : 0;
+  return header('Мой прогресс', true) +
+  '<div class="card">'+
+    '<div class="big">'+s.mastered+' / '+total+' закреплено</div>'+
+    '<div class="progressbar"><div style="width:'+pct+'%"></div></div>'+
+    '<p class="muted">'+pct+'%</p>'+
+  '</div>'+
+  '<div class="card">'+
+    '<div class="stat-row"><span>Новые</span><span>'+s.news+'</span></div>'+
+    '<div class="stat-row"><span>Изучаются</span><span>'+s.learning+'</span></div>'+
+    '<div class="stat-row"><span>Закреплены</span><span>'+s.mastered+'</span></div>'+
+    '<div class="stat-row"><span>Требуют повторения</span><span>'+s.review+'</span></div>'+
+  '</div>'+
+  '<p class="muted" style="text-align:center">Колода «'+DECKS[meta.deck||'core500'].name+'»: открыто блоков '+unlockedBlock()+' из '+totalBlocks()+' (по '+blockSize()+' слов)</p>';
+}
+
+function shuffle(a){ for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t;} return a; }
+
+/* Ошибка -> слово вернётся через 2–3 карточки (раньше остальных), прогресс слова при этом уже уменьшен на 1 */
+var blockJustDone=false;
+function requeueWrong(id){
+  retry = retry.filter(function(r){return r.id!==id;});
+  retry.push({id:id, due: cardCounter + 2 + Math.floor(Math.random()*2)});
+}
+
+/* ---------- Global handlers ---------- */
+window.__go = function(s){ go(s); };
+window.__back = function(){ back(); };
+window.__startStudy = function(mode){
+  studyMode = mode; retry = []; cardCounter = 0; lastId = null; blockJustDone = false;
+  session = {correct:0,wrong:0,masteredNow:0,blocksOpened:0};
+  currentId = pickNext();
+  if(!currentId){
+    screen='study'; navStack.push('home');
+    document.getElementById('app').innerHTML = header('Сессия завершена', true) +
+      '<div class="card"><p>'+(mode==='mistakes'?'Сейчас нет слов, требующих дополнительного повторения.':'Ты прошёл все слова этой колоды.')+'</p></div>'+
+      '<button class="btn btn-primary" onclick="__go(\'home\')">На главную</button>';
+    updateBackButton();
+    return;
+  }
+  go('study');
+};
+window.__answer = function(wordId, chosenId, btnEl){
+  if(currentAnswered) return;
+  currentAnswered=true;
+  var correct = chosenId===wordId;
+  var p = ensure(wordId);
+  var target = masterTarget();
+  var wasMastered=false;
+  if(correct){ p.c=Math.min(target, p.c+1); session.correct++; if(p.c>=target) wasMastered=true; }
+  else { p.c=Math.max(0, p.c-1); p.w++; session.wrong++; requeueWrong(wordId); }
+  p.last=Date.now();
+  saveProgress(progress);
+  if(wasMastered) session.masteredNow++;
+  if(checkUnlock()){ session.blocksOpened++; blockJustDone=true; }
+  var opts = document.querySelectorAll('#opts .opt');
+  opts.forEach(function(b){
+    if(b.getAttribute('data-id')===wordId) b.classList.add('correct');
+    else if(b===btnEl) b.classList.add('wrong');
+    b.disabled=true;
+  });
+  window.__pendingFeedback = {id:wordId, correct:correct};
+  setTimeout(function(){
+    document.getElementById('app').innerHTML = renderFeedback(wordId, correct);
+  }, 550);
+};
+window.__continueStudy = function(){
+  lastId = currentId;
+  if(blockJustDone){ blockJustDone=false; currentId=null; }
+  else currentId = pickNext();
+  document.getElementById('app').innerHTML = renderStudy();
+};
+window.__filter = function(f){ listFilter=f; render(); };
+window.__search = function(v){ listSearch=v; render(); };
+window.__setMode = function(m){ meta.mode=m; saveMeta(meta); applyMode(); applyThemeVars(); render(); };
+window.__setAccent = function(id){ meta.theme=id; saveMeta(meta); applyThemeVars(); render(); };
+window.__setBlockSize = function(n){ meta.blockSize=n; recomputeUnlockedBlock(); checkUnlock(); saveMeta(meta); render(); };
+window.__setDeck = function(dk){ meta.deck=dk; saveMeta(meta); render(); };
+window.__setMasterTarget = function(n){ meta.masterTarget=n; checkUnlock(); saveMeta(meta); render(); };
+window.__setHlColor = function(id){ meta.hlColor=id; saveMeta(meta); applyHighlightVars(); render(); };
+
+/* ---------- Резервная копия прогресса ---------- */
+window.__exportData = async function(){
+  var payload = {app:'ielts-vocab', schema:PROGRESS_SCHEMA, exportedAt:new Date().toISOString(), progress:progress, meta:meta};
+  var dl = null;
+  try{ dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null; }catch(e){ dl=null; }
+  if(!dl){ alert('Сохранение файла недоступно в этом окне.'); return; }
+  try{ await dl.save({filename:'ielts-vocab-progress.json', data:JSON.stringify(payload,null,2)}); }catch(e){}
+};
+window.__importFileChosen = function(input){
+  var file = input.files && input.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(){
+    try{
+      var data = JSON.parse(reader.result);
+      if(!data || data.app!=='ielts-vocab' || !data.progress) throw new Error('bad');
+      progress = data.progress;
+      meta = Object.assign(loadMeta(), data.meta||{});
+      saveProgress(progress); saveMeta(meta);
+      applyMode(); applyThemeVars(); applyHighlightVars();
+      screen='home'; navStack=[]; render();
+      alert('Прогресс восстановлен.');
+    }catch(e){ alert('Не удалось прочитать файл резервной копии.'); }
+  };
+  reader.readAsText(file,'utf-8');
+  input.value='';
+};
+window.__showWord = function(id){
+  var w=BY_ID[id], p=ensure(id), target=masterTarget();
+  var m = el('<div class="modal-bg" onclick="if(event.target===this) this.remove()"></div>');
+  m.innerHTML = '<div class="modal">'+
+    '<div class="row-between"><div><div class="word-en">'+esc(w.en)+'</div>'+(w.ipa?'<div class="ipa">'+esc(w.ipa)+'</div>':'')+'</div>'+(w.pos?'<span class="pos">'+esc(w.pos)+'</span>':'')+'</div>'+
+    '<p style="margin-top:12px;font-weight:600">'+esc(w.ru)+'</p>'+
+    (w.syn?'<p class="muted">Synonym: '+esc(w.syn)+'</p>':'')+
+    '<p class="muted" style="margin-top:10px">Definition</p><p style="font-style:italic">'+esc(w.defEn)+'</p><p class="muted" style="margin-top:4px">'+esc(w.defRu)+'</p>'+
+    (w.exEn?'<div class="ex"><p class="en">"'+esc(w.exEn)+'"</p><p class="ru">'+esc(w.exRu)+'</p></div>':'<p class="muted" style="margin-top:10px">В PDF для этого слова нет примера и транскрипции.</p>')+
+    '<div class="stat-row" style="margin-top:14px"><span>Progress</span><span>'+p.c+'/'+target+'</span></div>'+
+    '<div class="stat-row"><span>Ошибок</span><span>'+p.w+'</span></div>'+
+    '<button class="btn btn-secondary" style="margin-top:10px" onclick="this.closest(\'.modal-bg\').remove()">Закрыть</button>'+
+  '</div>';
+  document.body.appendChild(m);
+};
+
+function renderSettings(){
+  var modes=[['auto','Авто'],['light','Светлая'],['dark','Тёмная']];
+  return header('Настройки', true) +
+    '<div class="card">'+
+      '<p class="muted" style="margin-bottom:10px">Оформление</p>'+
+      '<div class="chips">'+modes.map(function(m){return '<button class="chip'+((meta.mode||'auto')===m[0]?' active':'')+'" onclick="__setMode(\''+m[0]+'\')">'+m[1]+'</button>';}).join('')+'</div>'+
+    '</div>'+
+    '<div class="card">'+
+      '<p class="muted" style="margin-bottom:10px">Акцентный цвет</p>'+
+      '<div class="swatches">'+THEMES.map(function(t){return '<button class="swatch'+((meta.theme||'blue')===t.id?' active':'')+'" style="background:'+t.accent+'" title="'+esc(t.name)+'" onclick="__setAccent(\''+t.id+'\')"></button>';}).join('')+'</div>'+
+    '</div>'+
+    '<div class="card">'+
+      '<p class="muted" style="margin-bottom:10px">Слов в блоке</p>'+
+      '<div class="chips">'+BLOCK_SIZES.map(function(n){return '<button class="chip'+(blockSize()===n?' active':'')+'" onclick="__setBlockSize('+n+')">'+n+'</button>';}).join('')+'</div>'+
+      '<p class="muted" style="margin-top:10px">Меньше слов в блоке — легче удерживать внимание, но чаще переключение между блоками.</p>'+
+    '</div>'+
+    '<div class="card">'+
+      '<p class="muted" style="margin-bottom:10px">Сколько правильных ответов подряд нужно для закрепления слова</p>'+
+      '<div class="chips">'+MASTER_TARGETS.map(function(n){return '<button class="chip'+(masterTarget()===n?' active':'')+'" onclick="__setMasterTarget('+n+')">'+n+'</button>';}).join('')+'</div>'+
+      '<p class="muted" style="margin-top:10px">Ошибка не обнуляет прогресс слова целиком, а откатывает его на 1 шаг назад — так закрепление честнее отражает реальное знание слова.</p>'+
+    '</div>'+
+    '<div class="card">'+
+      '<p class="muted" style="margin-bottom:10px">Резервная копия прогресса</p>'+
+      '<button class="btn btn-secondary" onclick="__exportData()">Сохранить прогресс в файл</button>'+
+      '<button class="btn btn-secondary" onclick="document.getElementById(\'importFileInput\').click()">Восстановить из файла</button>'+
+      '<p class="muted" style="margin-top:10px">Пригодится при смене телефона или очистке данных Telegram.</p>'+
+    '</div>';
+}
+
+function render(){
+  var app=document.getElementById('app');
+  if(screen==='home') app.innerHTML = renderHome();
+  else if(screen==='study') app.innerHTML = renderStudy();
+  else if(screen==='list') app.innerHTML = renderList();
+  else if(screen==='progress') app.innerHTML = renderProgress();
+  else if(screen==='settings') app.innerHTML = renderSettings();
+  updateBackButton();
+}
+render();
+})();
+</script>
+</body>
+</html>
